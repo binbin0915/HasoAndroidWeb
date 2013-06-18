@@ -5,12 +5,14 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.os.Bundle;   
 import android.view.KeyEvent;   
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebView;   
 import android.webkit.WebViewClient;   
 import android.widget.EditText;
@@ -124,6 +126,20 @@ public class MainActivity extends Activity {
     	
     	
         @Override
+		public void onReceivedError(WebView view, int errorCode,
+				String description, String failingUrl) {
+        	progressDialog.dismiss();
+			super.onReceivedError(view, errorCode, description, failingUrl);
+		}
+
+		@Override
+		public void onReceivedSslError(WebView view, SslErrorHandler handler,
+				SslError error) {
+			progressDialog.dismiss();
+			super.onReceivedSslError(view, handler, error);
+		}
+
+		@Override
 		public void onPageFinished(WebView view, String url) {
         	progressDialog.dismiss();
 			super.onPageFinished(view, url);
