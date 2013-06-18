@@ -1,12 +1,16 @@
 package com.haso.hasoandroidweb;
 import android.app.Activity;   
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;   
 import android.view.KeyEvent;   
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebView;   
 import android.webkit.WebViewClient;   
 import android.widget.EditText;
@@ -14,10 +18,14 @@ import android.widget.EditText;
 public class MainActivity extends Activity {   
     private WebView webview;   
     private static final String URLSERVER="http://ip.haso-soft.com:13188/EMGRecommendation/phone!categorySearchByLat?Latitude=232144&Longitude=10722323719900";
+    ProgressDialog progressDialog; // 进度条对话框
     @Override  
     public void onCreate(Bundle savedInstanceState) {   
         super.onCreate(savedInstanceState);   
         spfPreferences = getSharedPreferences(fileName, MODE_PRIVATE);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
+                              WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.main);   
         webview = (WebView) findViewById(R.id.webview);   
         //设置WebView属性，能够执行Javascript脚本   
@@ -112,8 +120,23 @@ public class MainActivity extends Activity {
     }   
        
     //Web视图   
-    private class HelloWebViewClient extends WebViewClient {   
-        @Override  
+    private class HelloWebViewClient extends WebViewClient {  
+    	
+    	
+        @Override
+		public void onPageFinished(WebView view, String url) {
+        	progressDialog.dismiss();
+			super.onPageFinished(view, url);
+		}
+
+		@Override
+		public void onPageStarted(WebView view, String url, Bitmap favicon) {
+			progressDialog = ProgressDialog.show(
+					MainActivity.this, "请稍等...", "正在获取...", true);
+			super.onPageStarted(view, url, favicon);
+		}
+
+		@Override  
         public boolean shouldOverrideUrlLoading(WebView view, String url) {   
             view.loadUrl(url);   
             return true;   
